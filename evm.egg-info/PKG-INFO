@@ -1,0 +1,14 @@
+Metadata-Version: 1.1
+Name: evm
+Version: 0.2
+Summary: Electronic Voting Machine
+Home-page: http://github.com/storborg/funniest
+Author: Asif Kodur
+Author-email: asif.kodur@gmail.com
+License: GPL
+Description: A simple and intutive software to conduct Elections in Schools
+Keywords: school election evm voting kerala
+Platform: UNKNOWN
+Classifier: License :: GPL
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Education :: Election
