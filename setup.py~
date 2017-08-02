@@ -1,14 +1,26 @@
 from setuptools import setup
 
-setup(name='testpackage',
-      version='0.1',
-      description='The funniest joke in the world',
-      url='http://github.com/storborg/funniest',
-      author='Flying Circus',
-      author_email='flyingcircus@example.com',
-      license='MIT',
-      packages=['testpackage'],
-      install_requires=[
-          'markdown','pyoo','reportlab','xlwt==1.2.0'
+setup(name='evm',
+      version='0.2',
+      description='Electronic Voting Machine',
+      long_description='A simple and intutive software to conduct Elections in Schools',
+      classifiers=[
+        'License :: GPL',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Education :: Election',
       ],
+      keywords='school election evm voting kerala ',
+      url='https://github.com/asifkodur/evm',
+      author='Asif Kodur',
+      author_email='asif.kodur@gmail.com',
+      license='GPL',
+      packages=['evm'],
+      install_requires=[
+          'fpdf==1.7.2','pygame===1.9.1release','wxPython==2.8.12.1','wxPython-common==2.8.12.1',
+      ],
+      include_package_data=True,
       zip_safe=False)
+
+
+
+
