@@ -23,13 +23,13 @@ Mydb=dir+'/poll.db'
 if os.path.exists(Mydb):
     
     #pass
-    print "eixts",Mydb
+    print "DB exits",Mydb
     
 else:
     
     print "DB not existin"
     
-print dir
+
 
 
 
@@ -344,18 +344,13 @@ class voting_machine(wx.Frame):
         
         
         pass
-        '''
-        cursor = wx.StockCursor(wx.CURSOR_HAND)
-        
-        for button in self.candidate_buttons: # Changes mouse cursor                
-                
-            button.SetCursor(cursor)
-            print "changed mouse"
-       
-        '''
        
     def Save_Vote(self,button_index):
+        
+        
         i=button_index
+        
+        
         
         id=str(self.LIST[i][0])
         cand=str(self.LIST[i][1])
@@ -367,7 +362,9 @@ class voting_machine(wx.Frame):
         try:
             vote=self.cur.fetchone()[0]
             vote=int(vote)
+            
         except:
+            
             vote=0
         
         query='UPDATE poll SET VOTE=? WHERE ID=? AND STD=? AND DIV=?'
@@ -416,14 +413,14 @@ class voting_machine(wx.Frame):
     def OnKeyPress(self, event):
         keycode = event.GetKeyCode()
        
-        #print keycode
+        
         if keycode == wx.WXK_SPACE :
             self.Enable()
             
         elif event.ControlDown() and keycode==69:
             
             self.Close()
-            print "closing panel"
+            
         self.SetFocus()
         self.up=0
         event.Skip()

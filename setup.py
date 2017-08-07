@@ -16,7 +16,7 @@ setup(name='evm',
       license='GPL',
       packages=['evm'],
       install_requires=[
-          'fpdf==1.7.2','pygame===1.9.1release','wxPython==2.8.12.1','wxPython-common==2.8.12.1',
+          'fpdf','pygame','wxPython','wxPython-common',
       ],
       include_package_data=True,
       zip_safe=False)

@@ -71,6 +71,7 @@ class poll(wx.Frame):
         self.Bind(wx.EVT_COMBOBOX, self.OnClass, self.combo_box_1)
         self.Bind(wx.EVT_COMBOBOX, self.OnDiv, self.combo_box_2)
         self.Bind(wx.EVT_LISTBOX, self.OnList, self.list_box_1)
+        
         self.Bind(wx.EVT_BUTTON, self.OnRemove, self.button_1)
         self.Bind(wx.EVT_TEXT, self.OnText, self.text_ctrl_1)
         self.Bind(wx.EVT_BUTTON, self.OnAdd, self.button_2)
@@ -80,16 +81,25 @@ class poll(wx.Frame):
         
         self.Bind(wx.EVT_KEY_DOWN, self.OnKeyPress)#,self.text_ctrl_1)
         
+        
         self.CLASS='Select'
         self.DIV='Select'
         
         self.con=mysql.connect(Mydb)
         self.cur = self.con.cursor()
         
+        
+        
+       
+        
         # end wxGlade
     def __set_menu(self):
         menuBar = wx.MenuBar()
         wxglade_tmp_menu = wx.Menu()
+        
+        self.mn_consolidated= wx.MenuItem(wxglade_tmp_menu, 106, "&Consolidated Report", "Report of all classes", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.AppendItem(self.mn_consolidated)
+        
         self.mn_export = wx.MenuItem(wxglade_tmp_menu, 101, "E&xport Database", "Exports database to be used in othe computers", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendItem(self.mn_export)
         self.mn_import = wx.MenuItem(wxglade_tmp_menu, 102, "&Import Database", "", wx.ITEM_NORMAL)
@@ -107,11 +117,17 @@ class poll(wx.Frame):
         self.SetMenuBar(menuBar)
         
         
+        self.Bind(wx.EVT_MENU, self.OnConsolidated, self.mn_consolidated)
         self.Bind(wx.EVT_MENU, self.OnExport, self.mn_export)
         self.Bind(wx.EVT_MENU, self.OnImport, self.mn_import)
         self.Bind(wx.EVT_MENU, self.OnExit, self.mn_exit)
         self.Bind(wx.EVT_MENU, self.OnAbout, self.mn_about)
         self.Bind(wx.EVT_MENU, self.OnHelp, self.mn_help)
+        
+   
+        
+    def OnConsolidated(self,event):
+        self.OnConsolidatedResult()
         
     def OnHelp(self,event):
         
@@ -248,7 +264,7 @@ class poll(wx.Frame):
         
     def __set_properties(self):
         # begin wxGlade: poll.__set_properties
-        self.SetTitle("School EVM")
+        self.SetTitle("EVM Electronic Voting Machine")
         self.SetSize((646, 678))
         self.SetFocus()
         self.label_1.SetFont(wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
@@ -323,7 +339,7 @@ class poll(wx.Frame):
         self.Centre()
         # end wxGlade
     def OnKeyPress(self,event):
-        print event.GetKeyCode(),'jjj'
+        pass
     def OnLoad(self):
         
         self.list_box_1.Clear()
@@ -358,17 +374,40 @@ class poll(wx.Frame):
         event.Skip()
 
     def OnList(self, event):  # wxGlade: poll.<event_handler>
-        self.button_1.Enabled=True
+        
+        if self.list_box_1.GetSelection()!=-1:
+            self.button_1.Enabled=True
+        else:
+            self.button_1.Enabled=False
         event.Skip()
 
     def OnRemove(self, event):  # wxGlade: poll.<event_handler>
+        
         sel=self.list_box_1.GetSelection()
         item=self.list_box_1.GetString(sel)
         
+        # checkig if votes already polled for deleting in that case the votes prepolled
+        query="SELECT COUNT(ID) FROM poll WHERE STD=? AND DIV=? AND VOTE>0"
+        self.cur.execute(query,(self.CLASS,self.DIV))
+        result=self.cur.fetchone()
+        
+        if result and result[0]!=0:
+            msg='Removing a Candidate will delete all polled votes for the current class.'
+            msg+=' Do you want to continue?'
+            dlg = wx.MessageDialog(self, msg, '',wx.YES_NO| wx.ICON_WARNING)
+            if dlg.ShowModal() == wx.ID_NO:
+                dlg.Destroy()
+                return 0
+            dlg.Destroy()
+        
+        
         query='DELETE FROM poll WHERE CANDIDATE=? AND STD=? AND DIV=?'
         self.cur.execute(query,(item,self.CLASS,self.DIV))
+        query='UPDATE poll SET VOTE=0 WHERE STD=? AND DIV=?'# Setting all votes to zero when a new candidate is added
+        self.cur.execute(query,(self.CLASS,self.DIV))
         self.con.commit()
         self.list_box_1.Delete(sel)
+        
         event.Skip()
 
     def OnText(self, event):  # wxGlade: poll.<event_handler>
@@ -383,7 +422,7 @@ class poll(wx.Frame):
 
     def OnAdd(self, event):  # wxGlade: poll.<event_handler>
         if len(self.text_ctrl_1.Value)>40:
-            dlg = wx.MessageDialog(self, 'Cannot Add !\nMaximum characters allowed for name is 40', '',wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, 'Cannot Add !Maximum characters allowed for name is 40', '',wx.OK | wx.ICON_ERROR)
             self.text_ctrl_1.Value=''
             self.text_ctrl_1.SetFocus()
             dlg.ShowModal()
@@ -400,8 +439,25 @@ class poll(wx.Frame):
                 dlg.ShowModal()
                 dlg.Destroy()
                 return 0
+            
+        
+        # checkig if votes already polled for deleting in that case the votes prepolled
+        query="SELECT COUNT(ID) FROM poll WHERE STD=? AND DIV=? AND VOTE>0"
+        self.cur.execute(query,(self.CLASS,self.DIV))
+        result=self.cur.fetchone()
+        if result and result[0]!=0:
+            msg='Adding a Candidate will delete all polled votes for the current class.'
+            msg+='Do you want to continue?'
+            dlg = wx.MessageDialog(self, msg, '',wx.YES_NO| wx.ICON_WARNING)
+            if dlg.ShowModal() == wx.ID_NO:
+                dlg.Destroy()
+                return 0
+            dlg.Destroy()
+        
         query='INSERT INTO poll(CANDIDATE,STD,DIV) VALUES(?,?,?)'
         self.cur.execute(query,(self.text_ctrl_1.Value.upper(),self.CLASS,self.DIV))
+        query='UPDATE poll SET VOTE=0 WHERE STD=? AND DIV=?'# Setting all votes to zero when a new candidate is added
+        self.cur.execute(query,(self.CLASS,self.DIV))
         self.con.commit()
         self.text_ctrl_1.Value=''
         self.text_ctrl_1.SetFocus()
@@ -423,14 +479,14 @@ class poll(wx.Frame):
             return 0
         else:
             msg='New poll will be started. All polled votes, if any, will be deleted.'
-            msg+='\n Do you want to continue?'
+            msg+=' Do you want to continue?'
             dlg = wx.MessageDialog(self, msg, '',wx.YES_NO| wx.ICON_WARNING)
             if dlg.ShowModal() == wx.ID_YES:
            
                
                 
                 query='UPDATE poll set VOTE=? WHERE STD=? AND DIV=?'
-                self.cur.execute(query,('',self.CLASS,self.DIV))
+                self.cur.execute(query,(0,self.CLASS,self.DIV))
                 self.con.commit()
                 dlg = wx.MessageDialog(self, 'Starting Poll. You can return to this window pressing Ctrl+E', '',wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
@@ -469,7 +525,7 @@ class poll(wx.Frame):
                     pass
             
             msg='Poll will continue from where stopped. Total vote polled='+str(tot_vot)
-            msg+='\n Do you want to continue?'
+            msg+=' Do you want to continue?'
             dlg = wx.MessageDialog(self, msg, '',wx.YES_NO| wx.ICON_WARNING)
             if dlg.ShowModal() == wx.ID_YES:
            
@@ -485,14 +541,36 @@ class poll(wx.Frame):
         event.Skip()
 
     def OnResult(self, event):  # wxGlade: poll.<event_handler>
-        if self.combo_box_1.Value=='Select' or self.combo_box_2.Value=='Select':
-            
-            dlg = wx.MessageDialog(self, 'Select a class and division', '',wx.OK | wx.ICON_ERROR)
+        
+        
+        # Checking if result is avilable for any class
+        query="SELECT DISTINCT STD,DIV FROM poll WHERE VOTE>0"
+        self.cur.execute(query)
+        result=self.cur.fetchall()
+        
+        if  not result:
+        
+        
+            dlg = wx.MessageDialog(self, 'No result to desplay as no poll is conducted', '',wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return 0
+        
+        elif self.combo_box_1.Value=='Select' or self.combo_box_2.Value=='Select':
+            
+            
+            
+            
+            msg="Select class and division for individual class result. Do you want to generate a consolidated report for the whole school election?"
+            dlg = wx.MessageDialog(self, msg, '',wx.YES_NO| wx.ICON_QUESTION)
+            if dlg.ShowModal() == wx.ID_YES:
+                self.OnConsolidatedResult()
+               
+            dlg.Destroy()
+            return 0
+            
         elif self.list_box_1.Count<=0:
-            dlg = wx.MessageDialog(self, 'Add atleast one candidate', '',wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, 'Add atleast one candidate and conduct poll for the class', '',wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return 0
@@ -506,6 +584,15 @@ class poll(wx.Frame):
             subprocess.call(["xdg-open",path])
         event.Skip()
         
+    def OnConsolidatedResult(self):
+        
+        result=PDF()
+        result.PrintConsolidated()
+        path="/tmp/consolidated.pdf"
+        result.output(path,'F')
+            
+           
+        subprocess.call(["xdg-open",path])
         
         # end of class poll
 if __name__ == "__main__":
