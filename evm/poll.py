@@ -595,6 +595,8 @@ class poll(wx.Frame):
         subprocess.call(["xdg-open",path])
         
         # end of class poll
+        
+'''
 if __name__ == "__main__":
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
@@ -602,3 +604,4 @@ if __name__ == "__main__":
     app.SetTopWindow(frame_1)
     frame_1.Show()
     app.MainLoop()
+'''

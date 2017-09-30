@@ -433,12 +433,13 @@ class voting_machine(wx.Frame):
     def PlayReady(self):
         
         pygame.init()
-
+        
         pygame.mixer.music.load(dir+"/ready.mp3")
-
+        
         pygame.mixer.music.play()
 
         time.sleep(1)
+
         
     def PlayPolled(self):
         
@@ -486,6 +487,7 @@ class voting_machine(wx.Frame):
         
 
 # end of class MyFrame
+'''
 if __name__ == "__main__":
     app = wx.PySimpleApp(0)
     wx.InitAllImageHandlers()
@@ -496,3 +498,5 @@ if __name__ == "__main__":
     frame_1.Load('8','A')
     app.SetTopWindow(frame_1)
     app.MainLoop()
+    
+'''
