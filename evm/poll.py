@@ -12,6 +12,8 @@ import os,sys
 from vote import voting_machine
 from about import About
 from result import PDF
+import pygame
+import time
 
 
 dir = os.path.split(sys.argv[0])[0]
@@ -473,7 +475,7 @@ class poll(wx.Frame):
             dlg.Destroy()
             return 0
         elif self.list_box_1.Count<=0:
-            dlg = wx.MessageDialog(self, 'Add atleat one candidate', '',wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self, 'Add atleast one candidate', '',wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             dlg.Destroy()
             return 0
@@ -491,6 +493,7 @@ class poll(wx.Frame):
                 dlg = wx.MessageDialog(self, 'Starting Poll. You can return to this window pressing Ctrl+E', '',wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
+                self.PlaySound("start")
                 
                 machine=voting_machine(self,-1,"")
                 machine.Load(self.CLASS,self.DIV)
@@ -532,6 +535,7 @@ class poll(wx.Frame):
                 dlg = wx.MessageDialog(self, 'Starting RePoll. You can return to this window pressing Ctrl+E', '',wx.OK | wx.ICON_INFORMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
+                self.PlaySound("resume")
                 
                 machine=voting_machine(self,-1,"")
                 machine.Load(self.CLASS,self.DIV)
@@ -595,6 +599,21 @@ class poll(wx.Frame):
         subprocess.call(["xdg-open",path])
         
         # end of class poll
+        
+    def PlaySound(self,sound):
+        
+        if sound=="start":audio="starting.mp3"
+        elif sound=="resume":audio="resuming.mp3"
+        elif sound=="end":audio="ending.mp3"
+        else:return
+        
+        pygame.init()
+        
+        pygame.mixer.music.load(dir+"/"+audio)
+        
+        pygame.mixer.music.play()
+
+        time.sleep(1)
         
 '''
 if __name__ == "__main__":

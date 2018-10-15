@@ -418,6 +418,7 @@ class voting_machine(wx.Frame):
             self.Enable()
             
         elif event.ControlDown() and keycode==69:
+            self.PlayEnding()
             
             self.Close()
             
@@ -446,6 +447,15 @@ class voting_machine(wx.Frame):
         pygame.init()
 
         pygame.mixer.music.load(dir+"/polled.wav")
+
+        pygame.mixer.music.play()
+
+        time.sleep(1)
+        
+    def PlayEnding(self):
+        pygame.init()
+
+        pygame.mixer.music.load(dir+"/ending.mp3")
 
         pygame.mixer.music.play()
 
