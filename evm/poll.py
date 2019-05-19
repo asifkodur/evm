@@ -276,7 +276,7 @@ class poll(wx.Frame):
         self.list_box_1.SetMinSize((300, 320))
         self.list_box_1.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.list_box_1.SetFont(wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        self.list_box_1.SetSelection(0)
+        #self.list_box_1.SetSelection(0) Comented as error in new ubuntu
         self.button_1.SetMinSize((140, 40))
         self.button_1.Enable(False)
         self.text_ctrl_1.SetMinSize((300, 33))
@@ -624,3 +624,4 @@ if __name__ == "__main__":
     frame_1.Show()
     app.MainLoop()
 '''
+

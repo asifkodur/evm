@@ -408,7 +408,7 @@ class voting_machine(wx.Frame):
             self.bitmap_button_2.Hide()
             self.bitmap_button_1.Show()
             
-            self.bitmap_button_1.SetFocus()
+            #self.bitmap_button_1.SetFocus()
         
     def OnKeyPress(self, event):
         keycode = event.GetKeyCode()
@@ -510,3 +510,4 @@ if __name__ == "__main__":
     app.MainLoop()
     
 '''
+
