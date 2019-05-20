@@ -48,10 +48,10 @@ class poll(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.panel_1 = wx.ScrolledWindow(self, -1, style=wx.TAB_TRAVERSAL)
         self.label_1 = wx.StaticText(self.panel_1, -1, "CLASS")
-        self.combo_box_1 = wx.ComboBox(self.panel_1, -1, choices=["Select", "8", "9", "10", "S1", "C1","H1","S2", "C2","H2"], style=wx.CB_DROPDOWN | wx.CB_DROPDOWN | wx.CB_READONLY | wx.CB_SORT)
+        self.combo_box_1 = wx.ComboBox(self.panel_1, -1, choices=["Select", "8", "9", "10", "S1", "C1","H1","S2", "C2","H2"], style=wx.CB_DROPDOWN | wx.CB_DROPDOWN | wx.CB_READONLY)
         self.label_2 = wx.StaticText(self.panel_1, -1, "DIV")
         cls_choice=["Select", "A", "B", "C", "D", "E", "F", "G", "H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-        self.combo_box_2 = wx.ComboBox(self.panel_1, -1, choices=cls_choice, style=wx.CB_DROPDOWN | wx.CB_DROPDOWN | wx.CB_READONLY | wx.CB_SORT)
+        self.combo_box_2 = wx.ComboBox(self.panel_1, -1, choices=cls_choice, style=wx.CB_DROPDOWN | wx.CB_DROPDOWN | wx.CB_READONLY)
         self.sizer_4_staticbox = wx.StaticBox(self.panel_1, -1, "Specify Class ")
         self.list_box_1 = wx.ListBox(self.panel_1, -1, choices=[], style=wx.LB_SINGLE)
         self.button_1 = wx.Button(self.panel_1, -1, "Remove Candidate")
@@ -267,16 +267,18 @@ class poll(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: poll.__set_properties
         self.SetTitle("EVM Electronic Voting Machine")
-        self.SetSize((646, 678))
+        self.SetSize((646, 700))
         self.SetFocus()
         self.label_1.SetFont(wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.combo_box_1.SetSelection(0)
+        self.combo_box_1.SetMinSize((100,40))
         self.label_2.SetFont(wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
+        self.combo_box_2.SetMinSize((100,40))
         self.combo_box_2.SetSelection(0)
         self.list_box_1.SetMinSize((300, 320))
-        self.list_box_1.SetBackgroundColour(wx.Colour(255, 255, 255))
+        #self.list_box_1.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.list_box_1.SetFont(wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        #self.list_box_1.SetSelection(0) Comented as error in new ubuntu
+        #self.list_box_1.SetSelection(0) #Comented as error in new ubuntu
         self.button_1.SetMinSize((140, 40))
         self.button_1.Enable(False)
         self.text_ctrl_1.SetMinSize((300, 33))
@@ -356,13 +358,17 @@ class poll(wx.Frame):
                         
             
     def OnClass(self, event):  # wxGlade: poll.<event_handler>
+		
+			
         self.CLASS= self.combo_box_1.Value
+        
         if self.text_ctrl_1.Value!='' and self.combo_box_1.Value!='Select' and  self.combo_box_2.Value!='Select' :
             self.button_2.Enabled=True
         else:
              self.button_2.Enabled=False
             
         self.OnLoad()
+        self.button_1.Enabled=False
         event.Skip()
 
     def OnDiv(self, event):  # wxGlade: poll.<event_handler>
@@ -373,10 +379,11 @@ class poll(wx.Frame):
              self.button_2.Enabled=False
             
         self.OnLoad()
+        self.button_1.Enabled=False
         event.Skip()
 
     def OnList(self, event):  # wxGlade: poll.<event_handler>
-        
+        print "on list"
         if self.list_box_1.GetSelection()!=-1:
             self.button_1.Enabled=True
         else:
@@ -409,7 +416,7 @@ class poll(wx.Frame):
         self.cur.execute(query,(self.CLASS,self.DIV))
         self.con.commit()
         self.list_box_1.Delete(sel)
-        
+        self.button_1.Enabled=False
         event.Skip()
 
     def OnText(self, event):  # wxGlade: poll.<event_handler>
@@ -463,6 +470,7 @@ class poll(wx.Frame):
         self.con.commit()
         self.text_ctrl_1.Value=''
         self.text_ctrl_1.SetFocus()
+        self.button_2.Enabled=False
         self.OnLoad()
         event.Skip()
 
