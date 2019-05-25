@@ -5,6 +5,8 @@ from fpdf import FPDF
 import sqlite3 as mysql
 import os,sys
 
+from datetime import date
+
 
 dir = os.path.split(sys.argv[0])[0]
 Mydb=dir+'/poll.db'
@@ -67,6 +69,14 @@ class PDF(FPDF):
         self.set_font('Arial','B',18)
         self.cell(0,10,"School Parliament Election Result",0,0,'C')
         
+	
+	today = date.today()
+	d1 = today.strftime("%d/%m/%Y")
+
+	self.ln(20)
+        self.set_font('Arial',size=13)
+        self.cell(10,10, "Poll Date:                          "+str(d1))
+
         self.ln(20)
         self.set_font('Arial',size=13)
         self.cell(10,10, "Class:                          "+std+" "+div)
